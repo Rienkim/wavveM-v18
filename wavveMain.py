@@ -11,13 +11,13 @@ __lib__ = os.path.join(__cwd__, 'resources', 'lib')
 sys.path.append(__lib__)
 
 
-def Iiii111Ii11I1():
-  ooO0oooOoO0 = urlparse.parse_qs(sys.argv[2][1:])
-  for II11i in ooO0oooOoO0.keys():
-    ooO0oooOoO0[II11i] = ooO0oooOoO0[II11i][0]
-  return ooO0oooOoO0
+def dropMultiArgv():
+  argvDict = urlparse.parse_qs(sys.argv[2][1:])
+  for key in argvDict.keys():
+    argvDict[key] = argvDict[key][0]
+  return argvDict
 
 
-i1111 = o000o0o00o0Oo(sys.argv[0], int(sys.argv[1]), Iiii111Ii11I1())
-i1111.wavve_main()
+obj = WavveRun(sys.argv[0], int(sys.argv[1]), dropMultiArgv())
+obj.wavve_main()
 # dd678faae9ac167bc83abf78e5cb2f3f0688d3a3

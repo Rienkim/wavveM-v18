@@ -13,13 +13,11 @@ import datetime
 import time
 reload(sys)
 sys.setdefaultencoding('utf-8')
-o0oO0 = [
-    {'title': '홈', 'uicode': 'GN1', 'came': 'home'}, {'title': 'LIVE 채널', 'uicode': 'GN3', 'came': 'live'}, {
-        'title': 'VOD 방송', 'uicode': 'GN2', 'came': 'broadcast'}    # i1IIi.I1Ii111 / IiII * OoooooooOO + I11i * oO0o
-    # i11iIiiIii - II111iiii % I1Ii111 - iIii1I11I1II1.I1ii11iIi11i.II111iiii
-    , {'title': '영화(Movie)', 'uicode': 'GN17', 'came': 'movie'}, {'title': '해외시리즈', 'uicode': 'GN12', 'came': 'global'}, {'title': '분류별 - 방송(VOD) - 인기순', 'uicode': 'GENRE', 'came': 'vodgenre', 'orderby': 'viewtime', 'ordernm': '인기순'}, {'title': '분류별 - 방송(VOD) - 최신순', 'uicode': 'GENRE', 'came': 'vodgenre', 'orderby': 'new', 'ordernm': '최신순'}, {'title': '분류별 - 영화(Movie) - 인기순', 'uicode': 'GENRE', 'came': 'moviegenre_svod', 'orderby': 'paid', 'ordernm': '인기순'}, {'title': '분류별 - 영화(Movie) - 업데이트순', 'uicode': 'GENRE', 'came': 'moviegenre_svod', 'orderby': 'displaystart', 'ordernm': '업데이트순'}, {'title': '검색', 'uicode': 'SEARCH', 'came': '-'}, {'title': 'Watched(시청목록)', 'uicode': 'WATCH', 'came': '-'}
+elemList = [
+    {'title': '홈', 'uicode': 'GN1', 'came': 'home'}, {'title': 'LIVE 채널', 'uicode': 'GN3', 'came': 'live'}, {'title': 'VOD 방송', 'uicode': 'GN2', 'came': 'broadcast'}, {'title': '영화(Movie)', 'uicode': 'GN17', 'came': 'movie'}, {'title': '해외시리즈', 'uicode': 'GN12', 'came': 'global'}, {'title': '분류별 - 방송(VOD) - 인기순', 'uicode': 'GENRE', 'came': 'vodgenre', 'orderby': 'viewtime', 'ordernm': '인기순'}, {'title': '분류별 - 방송(VOD) - 최신순', 'uicode': 'GENRE', 'came': 'vodgenre', 'orderby': 'new', 'ordernm': '최신순'}, {
+        'title': '분류별 - 영화(Movie) - 인기순', 'uicode': 'GENRE', 'came': 'moviegenre_svod', 'orderby': 'paid', 'ordernm': '인기순'}, {'title': '분류별 - 영화(Movie) - 업데이트순', 'uicode': 'GENRE', 'came': 'moviegenre_svod', 'orderby': 'displaystart', 'ordernm': '업데이트순'}, {'title': '검색', 'uicode': 'SEARCH', 'came': '-'}, {'title': 'Watched(시청목록)', 'uicode': 'WATCH', 'came': '-'}
 ]
-OOoO = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36'
+userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36'
 __addon__ = xbmcaddon.Addon()
 __language__ = __addon__.getLocalizedString
 __profile__ = xbmc.translatePath(__addon__.getAddonInfo('profile'))
@@ -28,7 +26,7 @@ __addonid__ = __addon__.getAddonInfo('id')
 __addonname__ = __addon__.getAddonInfo('name')
 
 
-class o000o0o00o0Oo (object):
+class WavveRun (object):
   def __init__(self, in_addonurl, in_handle, in_params):
     self._addon_url = in_addonurl
     self._addon_handle = in_handle
@@ -37,160 +35,160 @@ class o000o0o00o0Oo (object):
 
   def addon_noti(self, sting):
     try:
-      oOOOO = xbmcgui.Dialog()
-      oOOOO.notification(__addonname__, sting)
+      dialog = xbmcgui.Dialog()
+      dialog.notification(__addonname__, sting)
     except:
       None
 
   def addon_log(self, string, isDebug=False):
     try:
-      I1Ii = string.encode('utf-8', 'ignore')
+      logStr = string.encode('utf-8', 'ignore')
     except:
-      I1Ii = 'addonException: addon_log'
+      logStr = 'addonException: addon_log'
     if isDebug:
-      o0oOo0Ooo0O = xbmc.LOGDEBUG
+      logLevel = xbmc.LOGDEBUG
     else:
-      o0oOo0Ooo0O = xbmc.LOGNOTICE
+      logLevel = xbmc.LOGNOTICE
     xbmc.log("[%s-%s]: %s" %
-             (__addonid__, __version__, I1Ii), level=o0oOo0Ooo0O)
+             (__addonid__, __version__, logStr), level=logLevel)
 
   def get_keyboard_input(self, title):
-    OOoO000O0OO = None
-    iiI1IiI = xbmc.Keyboard()
-    iiI1IiI.setHeading(title)
+    text = None
+    keyboard = xbmc.Keyboard()
+    keyboard.setHeading(title)
     xbmc.sleep(1000)
-    iiI1IiI.doModal()
-    if (iiI1IiI.isConfirmed()):
-      OOoO000O0OO = iiI1IiI.getText()
-    return OOoO000O0OO
+    keyboard.doModal()
+    if (keyboard.isConfirmed()):
+      text = keyboard.getText()
+    return text
 
   def get_settings_login_info(self):
-    ii1 = __addon__.getSetting('id')
-    o0oO0o00oo = __addon__.getSetting('pw')
-    II1i1Ii11Ii11 = __addon__.getSetting('selected_profile')
-    return (ii1, o0oO0o00oo, II1i1Ii11Ii11)
+    loginId = __addon__.getSetting('id')
+    loginPw = __addon__.getSetting('pw')
+    selectedProfile = __addon__.getSetting('selected_profile')
+    return (loginId, loginPw, selectedProfile)
 
   def get_selQuality(self):
     try:
-      oOOo0oo = [1080, 720, 480, 360]
-      I11II1i = int(__addon__.getSetting('selected_quality'))
-      return oOOo0oo[I11II1i]
+      qualityList = [1080, 720, 480, 360]
+      selectedQuality = int(__addon__.getSetting('selected_quality'))
+      return qualityList[selectedQuality]
     except:
       None
     return 1080
 
   def get_settings_exclusion21(self):
-    iI = __addon__.getSetting('exclusion21')
-    if iI == 'false':
+    isExclusion21 = __addon__.getSetting('exclusion21')
+    if isExclusion21 == 'false':
       return False
     else:
       return True
 
   def get_settings_direct_replay(self):
-    o00oOO0 = int(__addon__.getSetting('direct_replay'))
-    if o00oOO0 == 0:
+    directPlay = int(__addon__.getSetting('direct_replay'))
+    if directPlay == 0:
       return False
     else:
       return True
 
   def get_settings_addinfo(self):
-    O0OOO00oo = __addon__.getSetting('add_infoyn')
-    if O0OOO00oo == 'false':
+    addInfoyn = __addon__.getSetting('add_infoyn')
+    if addInfoyn == 'false':
       return False
     else:
       return True
 
   def get_settings_thumbnail_landyn(self):
-    Ii1i11IIii1I = int(__addon__.getSetting('thumbnail_way'))
-    if Ii1i11IIii1I == 0:
+    thumbnailWay = int(__addon__.getSetting('thumbnail_way'))
+    if thumbnailWay == 0:
       return True
     else:
       return False
 
   def set_winCredential(self, credential):
-    OooO0OoOOOO = xbmcgui.Window(10000)
-    OooO0OoOOOO.setProperty('WAVVE_M_CREDENTIAL', credential)
-    OooO0OoOOOO.setProperty(
+    window = xbmcgui.Window(10000)
+    window.setProperty('WAVVE_M_CREDENTIAL', credential)
+    window.setProperty(
         'WAVVE_M_LOGINTIME', datetime.datetime.now().strftime('%Y-%m-%d'))
 
   def get_winCredential(self):
-    OooO0OoOOOO = xbmcgui.Window(10000)
-    return OooO0OoOOOO.getProperty('WAVVE_M_CREDENTIAL')
+    window = xbmcgui.Window(10000)
+    return window.getProperty('WAVVE_M_CREDENTIAL')
 
   def set_winEpisodeOrderby(self, orderby):
-    OooO0OoOOOO = xbmcgui.Window(10000)
-    OooO0OoOOOO.setProperty('WAVVE_M_ORDERBY', orderby)
+    window = xbmcgui.Window(10000)
+    window.setProperty('WAVVE_M_ORDERBY', orderby)
 
   def get_winEpisodeOrderby(self):
-    OooO0OoOOOO = xbmcgui.Window(10000)
-    return OooO0OoOOOO.getProperty('WAVVE_M_ORDERBY')
+    window = xbmcgui.Window(10000)
+    return window.getProperty('WAVVE_M_ORDERBY')
 
   def add_dir(self, label, sublabel='', img='', infoLabels=None, isFolder=True, params=''):
-    i11iIIIIIi1 = '%s?%s' % (self._addon_url, urllib.urlencode(params))
+    url = '%s?%s' % (self._addon_url, urllib.urlencode(params))
     if sublabel:
-      IiI11iII1 = '%s < %s >' % (label, sublabel)
+      itemLabel = '%s < %s >' % (label, sublabel)
     else:
-      IiI11iII1 = label
+      itemLabel = label
     if not img:
       img = 'DefaultFolder.png'
-    i1I11i1I = xbmcgui.ListItem(IiI11iII1)
-    i1I11i1I.setArt({'thumbnailImage': img, 'icon': img, 'poster': img})
+    listItem = xbmcgui.ListItem(itemLabel)
+    listItem.setArt({'thumbnailImage': img, 'icon': img, 'poster': img})
     if infoLabels:
-      i1I11i1I.setInfo(type="video", infoLabels=infoLabels)
+      listItem.setInfo(type="video", infoLabels=infoLabels)
     if not isFolder:
-      i1I11i1I.setProperty('IsPlayable', 'true')
+      listItem.setProperty('IsPlayable', 'true')
     xbmcplugin.addDirectoryItem(
-        self._addon_handle, i11iIIIIIi1, i1I11i1I, isFolder)
+        self._addon_handle, url, listItem, isFolder)
 
   def dp_Main_List(self):
-    for i11i1I1 in o0oO0:
-      IiI11iII1 = i11i1I1.get('title')
-      if i11i1I1.get('uicode') == 'GENRE':
-        O0ii1ii1ii = {'mode': 'GENRE', 'uicode': i11i1I1.get('came'), 'genre': '-', 'subgenre': '-', 'orderby': i11i1I1.get('orderby'), 'ordernm': i11i1I1.get('ordernm')
+    for elem in elemList:
+      title = elem.get('title')
+      if elem.get('uicode') == 'GENRE':
+        parameters = {'mode': 'GENRE', 'uicode': elem.get('came'), 'genre': '-', 'subgenre': '-', 'orderby': elem.get('orderby'), 'ordernm': elem.get('ordernm')
                       }
-      elif i11i1I1.get('uicode') == 'WATCH':
-        O0ii1ii1ii = {'mode': 'WATCH', 'genre': '-'
+      elif elem.get('uicode') == 'WATCH':
+        parameters = {'mode': 'WATCH', 'genre': '-'
                       }
-      elif i11i1I1.get('uicode') == 'SEARCH':
-        O0ii1ii1ii = {'mode': 'SEARCH', 'genre': '-'
+      elif elem.get('uicode') == 'SEARCH':
+        parameters = {'mode': 'SEARCH', 'genre': '-'
                       }
       else:
-        O0ii1ii1ii = {'mode': 'GNB_LIST', 'uicode': i11i1I1.get('uicode'), 'came': i11i1I1.get('came')
+        parameters = {'mode': 'GNB_LIST', 'uicode': elem.get('uicode'), 'came': elem.get('came')
                       }
       iiIii = True
-      if i11i1I1.get('uicode') == 'XXX':
-        O0ii1ii1ii['mode'] = 'XXX'
+      if elem.get('uicode') == 'XXX':
+        parameters['mode'] = 'XXX'
         iiIii = False
-      self.add_dir(IiI11iII1, sublabel='', img='', infoLabels=None,
-                   isFolder=iiIii, params=O0ii1ii1ii)
-    if len(o0oO0) > 0:
+      self.add_dir(title, sublabel='', img='', infoLabels=None,
+                   isFolder=iiIii, params=parameters)
+    if len(elemList) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle)
 
   def login_main(self):
-    (IIIIii1I, IiI1i, o0O) = self.get_settings_login_info()
-    if not (IIIIii1I and IiI1i):
-      oOOOO = xbmcgui.Dialog()
-      i1i = oOOOO.yesno(__name__, __language__(30101).encode(
+    (loginId, loginPw, selectedProfile) = self.get_settings_login_info()
+    if not (loginId and loginPw):
+      dialog = xbmcgui.Dialog()
+      isYes = dialog.yesno(__name__, __language__(30101).encode(
           'utf8'), __language__(30102).encode('utf8'))
-      if i1i == True:
+      if isYes == True:
         __addon__.openSettings()
         sys.exit()
-    O00o0OO0 = datetime.datetime.now().strftime('%Y-%m-%d')
+    strtime = datetime.datetime.now().strftime('%Y-%m-%d')
     if xbmcgui.Window(10000).getProperty('WAVVE_M_LOGINWAIT') == 'TRUE':
-      oOOo0 = 0
+      count = 0
       while True:
-        oOOo0 += 1
+        count += 1
         time.sleep(0.05)
-        if xbmcgui.Window(10000).getProperty('WAVVE_M_LOGINTIME') == O00o0OO0:
+        if xbmcgui.Window(10000).getProperty('WAVVE_M_LOGINTIME') == strtime:
           return
-        if oOOo0 > 600:
+        if count > 600:
           return
     else:
       xbmcgui.Window(10000).setProperty('WAVVE_M_LOGINWAIT', 'TRUE')
-    if xbmcgui.Window(10000).getProperty('WAVVE_M_LOGINTIME') == O00o0OO0:
+    if xbmcgui.Window(10000).getProperty('WAVVE_M_LOGINTIME') == strtime:
       xbmcgui.Window(10000).setProperty('WAVVE_M_LOGINWAIT', 'FALSE')
       return
-    if not self.WavveObj.GetCredential(IIIIii1I, IiI1i, o0O):
+    if not self.WavveObj.GetCredential(loginId, loginPw, selectedProfile):
       self.addon_noti(__language__(30103).encode('utf8'))
       xbmcgui.Window(10000).setProperty('WAVVE_M_LOGINWAIT', 'FALSE')
       sys.exit()
@@ -199,489 +197,475 @@ class o000o0o00o0Oo (object):
     xbmcgui.Window(10000).setProperty('WAVVE_M_LOGINWAIT', 'FALSE')
 
   def dp_setEpOrderby(self, args):
-    iIIiIi1 = args.get('orderby')
-    self.set_winEpisodeOrderby(iIIiIi1)
+    orderby = args.get('orderby')
+    self.set_winEpisodeOrderby(orderby)
     xbmc.executebuiltin("Container.Refresh")
 
   def dp_Gnb_List(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    Oo0OO = self.WavveObj.GetGnList(args.get('uicode'))
-    for O0OO in Oo0OO:
-      IiI11iII1 = O0OO.get('title')
-      O0ii1ii1ii = {'mode': 'GN_LIST' if O0OO.get('uicode') != 'CY1' else 'GN_MYVIEW', 'uicode': O0OO.get('uicode'), 'came': args.get('came'), 'page': '1'
+    gnList = self.WavveObj.GetGnList(args.get('uicode'))
+    for gn in gnList:
+      title = gn.get('title')
+      parameters = {'mode': 'GN_LIST' if gn.get('uicode') != 'CY1' else 'GN_MYVIEW', 'uicode': gn.get('uicode'), 'came': args.get('came'), 'page': '1'
                     }
-      self.add_dir(IiI11iII1, sublabel='', img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-    if len(Oo0OO) > 0:
+      self.add_dir(title, sublabel='', img='',
+                   infoLabels=None, isFolder=True, params=parameters)
+    if len(gnList) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle, cacheToDisc=False)
 
   def dp_Myview_Group(self, args):
-    IiI11iII1 = 'VOD 시청내역'
-    O0ii1ii1ii = {'mode': 'MYVIEW_LIST', 'uicode': 'vod', 'page': '1'
-                  }
-    self.add_dir(IiI11iII1, sublabel='', img='', infoLabels=None,
-                 isFolder=True, params=O0ii1ii1ii)
-    IiI11iII1 = '영화 시청내역'
-    O0ii1ii1ii['uicode'] = 'movie'
-    self.add_dir(IiI11iII1, sublabel='', img='', infoLabels=None,
-                 isFolder=True, params=O0ii1ii1ii)
+    self.add_dir('VOD 시청내역', sublabel='', img='', infoLabels=None,
+                 isFolder=True, params={'mode': 'MYVIEW_LIST', 'uicode': 'vod', 'page': '1'})
+    self.add_dir('영화 시청내역', sublabel='', img='', infoLabels=None,
+                 isFolder=True, params={'mode': 'MYVIEW_LIST', 'uicode': 'movie', 'page': '1'})
     xbmcplugin.endOfDirectory(self._addon_handle)
 
   def dp_Myview_List(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    oo0 = self.get_settings_addinfo()
-    IiI1iIiIIIii = args.get('uicode')
-    oOoO = int(args.get('page'))
-    oOoO00O0, OO = self.WavveObj.GetMyviewList(
-        IiI1iIiIIIii, oOoO, addinfoyn=oo0)
-    for II1IIIIiII1i in oOoO00O0:
-      IiI11iII1 = II1IIIIiII1i.get('title')
-      i1II1 = II1IIIIiII1i.get('subtitle')
-      i11i1 = II1IIIIiII1i.get('thumbnail')
-      i1iI = II1IIIIiII1i.get('info')
-      if IiI1iIiIIIii == 'movie' and oo0 == True:
-        IiI11iII1 = '%s (%s)' % (IiI11iII1, str(i1iI.get('year')))
+    IsAddInfo = self.get_settings_addinfo()
+    uicode = args.get('uicode')
+    pageNum = int(args.get('page'))
+    viewList, OO = self.WavveObj.GetMyviewList(
+        uicode, pageNum, addinfoyn=IsAddInfo)
+    for view in viewList:
+      title = view.get('title')
+      subtitle = view.get('subtitle')
+      thumbnail = view.get('thumbnail')
+      info = view.get('info')
+      if uicode == 'movie' and IsAddInfo == True:
+        title = '%s (%s)' % (title, str(info.get('year')))
       else:
-        i1iI['plot'] = IiI11iII1
-      if IiI1iIiIIIii == 'vod':
-        O0ii1ii1ii = {'mode': 'DEEP_LIST', 'contentid': II1IIIIiII1i.get('programid'), 'contentidType': 'programid', 'uicode': 'vod', 'page': '1', 'title': IiI11iII1, 'subtitle': i1II1, 'thumbnail': i11i1, 'viewage': II1IIIIiII1i.get('viewage')
-                      }
-        iiIii = True
+        info['plot'] = title
+      if uicode == 'vod':
+        paramters = {'mode': 'DEEP_LIST', 'contentid': view.get('programid'), 'contentidType': 'programid', 'uicode': 'vod', 'page': '1', 'title': title, 'subtitle': subtitle, 'thumbnail': thumbnail, 'viewage': view.get('viewage')
+                     }
+        isFolder = True
       else:
-        O0ii1ii1ii = {'mode': 'MOVIE', 'contentid': II1IIIIiII1i.get('contentid'), 'contentidType': 'contentid', 'uicode': 'movie', 'page': '1', 'title': IiI11iII1, 'subtitle': i1II1, 'thumbnail': i11i1, 'viewage': II1IIIIiII1i.get('viewage')
-                      }
-        iiIii = False
-      if II1IIIIiII1i.get('viewage') == '21':
-        i1II1 += ' (%s)' % (II1IIIIiII1i.get('viewage'))
-      self.add_dir(IiI11iII1, sublabel=i1II1, img=i11i1,
-                   infoLabels=i1iI, isFolder=iiIii, params=O0ii1ii1ii)
+        paramters = {'mode': 'MOVIE', 'contentid': view.get('contentid'), 'contentidType': 'contentid', 'uicode': 'movie', 'page': '1', 'title': title, 'subtitle': subtitle, 'thumbnail': thumbnail, 'viewage': view.get('viewage')
+                     }
+        isFolder = False
+      if view.get('viewage') == '21':
+        subtitle += ' (%s)' % (view.get('viewage'))
+      self.add_dir(title, sublabel=subtitle, img=thumbnail,
+                   infoLabels=info, isFolder=isFolder, params=paramters)
     if OO:
-      O0ii1ii1ii['mode'] = 'MYVIEW_LIST'
-      O0ii1ii1ii['uicode'] = IiI1iIiIIIii
-      O0ii1ii1ii['page'] = str(oOoO + 1)
-      IiI11iII1 = '[B]%s >>[/B]' % '다음 페이지'
-      i1II1 = str(oOoO + 1)
-      self.add_dir(IiI11iII1, sublabel=i1II1, img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-    if len(oOoO00O0) > 0:
+      paramters['mode'] = 'MYVIEW_LIST'
+      paramters['uicode'] = uicode
+      paramters['page'] = str(pageNum + 1)
+      label = '[B]%s >>[/B]' % '다음 페이지'
+      sublabel = str(pageNum + 1)
+      self.add_dir(label, sublabel=sublabel, img='',
+                   infoLabels=None, isFolder=True, params=paramters)
+    if len(viewList) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle, cacheToDisc=False)
 
   def dp_Genre_Group(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    I1 = args.get('mode')
-    OooooO0oOOOO = args.get('uicode')
-    o0O00oOOoo = args.get('genre')
-    i1I1iIi = args.get('subgenre')
-    iIIiIi1 = args.get('orderby')
-    IIii11Ii1i1I = args.get('ordernm')
-    if o0O00oOOoo == '-':
-      II1iI1I11I = self.WavveObj.GetGenreGroup(
-          OooooO0oOOOO, o0O00oOOoo, iIIiIi1, IIii11Ii1i1I, exclusion21=self.get_settings_exclusion21())
+    mode = args.get('mode')
+    uicode = args.get('uicode')
+    genre = args.get('genre')
+    # subgenre = args.get('subgenre')
+    orderby = args.get('orderby')
+    ordernm = args.get('ordernm')
+    if genre == '-':
+      genreGroup = self.WavveObj.GetGenreGroup(
+          uicode, genre, orderby, ordernm, exclusion21=self.get_settings_exclusion21())
     else:
-      o0OO0 = {'adult': args.get('adult'), 'broadcastid': args.get('broadcastid'), 'contenttype': args.get('contenttype'), 'genre': args.get('genre'), 'uiparent': args.get('uiparent'), 'uirank': args.get('uirank'), 'uitype': args.get('uitype'), 'orderby': iIIiIi1, 'ordernm': IIii11Ii1i1I
-               }
-      II1iI1I11I = self.WavveObj.GetGenreGroup_sub(o0OO0)
-    for oO in II1iI1I11I:
-      IiI11iII1 = oO.get('title') + '  (' + IIii11Ii1i1I + ')'
-      O0ii1ii1ii = {'mode': I1, 'uicode': OooooO0oOOOO, 'genre': oO.get('genre'), 'subgenre': oO.get('subgenre'), 'adult': oO.get('adult'), 'page': '1', 'broadcastid': oO.get('broadcastid'), 'contenttype': oO.get('contenttype'), 'uiparent': oO.get('uiparent'), 'uirank': oO.get('uirank'), 'uitype': oO.get('uitype'), 'orderby': iIIiIi1, 'ordernm': IIii11Ii1i1I
+      parameters = {'adult': args.get('adult'), 'broadcastid': args.get('broadcastid'), 'contenttype': args.get('contenttype'), 'genre': args.get('genre'), 'uiparent': args.get('uiparent'), 'uirank': args.get('uirank'), 'uitype': args.get('uitype'), 'orderby': orderby, 'ordernm': ordernm
                     }
-      if OooooO0oOOOO == 'moviegenre' or OooooO0oOOOO == 'moviegenre_svod' or OooooO0oOOOO == 'moviegenre_ppv' or oO.get('subgenre') != '-':
-        O0ii1ii1ii['mode'] = 'GENRE_LIST'
+      genreGroup = self.WavveObj.GetGenreGroup_sub(parameters)
+    for elem in genreGroup:
+      label = elem.get('title') + '  (' + ordernm + ')'
+      parameters = {'mode': mode, 'uicode': uicode, 'genre': elem.get('genre'), 'subgenre': elem.get('subgenre'), 'adult': elem.get('adult'), 'page': '1', 'broadcastid': elem.get('broadcastid'), 'contenttype': elem.get('contenttype'), 'uiparent': elem.get('uiparent'), 'uirank': elem.get('uirank'), 'uitype': elem.get('uitype'), 'orderby': orderby, 'ordernm': ordernm
+                    }
+      if uicode == 'moviegenre' or uicode == 'moviegenre_svod' or uicode == 'moviegenre_ppv' or elem.get('subgenre') != '-':
+        parameters['mode'] = 'GENRE_LIST'
       else:
         None
-      self.add_dir(IiI11iII1, sublabel='', img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-    if len(II1iI1I11I) > 0:
+      self.add_dir(label, sublabel='', img='',
+                   infoLabels=None, isFolder=True, params=parameters)
+    if len(genreGroup) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle, cacheToDisc=False)
 
   def dp_Genre_List(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    oo0 = self.get_settings_addinfo()
-    OooooO0oOOOO = args.get('uicode')
-    oOoO = int(args.get('page'))
-    O0ii1ii1ii = {'adult': args.get('adult'), 'broadcastid': args.get('broadcastid'), 'contenttype': args.get('contenttype'), 'genre': args.get('genre'), 'subgenre': args.get('subgenre'), 'uiparent': args.get('uiparent'), 'uirank': args.get('uirank'), 'uitype': args.get('uitype'), 'orderby': args.get('orderby')
+    isAddInfo = self.get_settings_addinfo()
+    uicode = args.get('uicode')
+    pageNum = int(args.get('page'))
+    parameters = {'adult': args.get('adult'), 'broadcastid': args.get('broadcastid'), 'contenttype': args.get('contenttype'), 'genre': args.get('genre'), 'subgenre': args.get('subgenre'), 'uiparent': args.get('uiparent'), 'uirank': args.get('uirank'), 'uitype': args.get('uitype'), 'orderby': args.get('orderby')
                   }
     if args.get('genre') == args.get('subgenre'):
-      O0ii1ii1ii['subgenre'] = 'all'
-    II1iI1I11I, OO = self.WavveObj.GetGenreList(
-        OooooO0oOOOO, O0ii1ii1ii, oOoO, addinfoyn=oo0)
-    for oO in II1iI1I11I:
-      IiI11iII1 = oO.get('title')
-      i11i1 = oO.get('thumbnail')
-      i1iI = oO.get('info')
-      if OooooO0oOOOO == 'moviegenre_svod' and oo0 == True:
-        IiI11iII1 = '%s (%s)' % (IiI11iII1, str(i1iI.get('year')))
+      parameters['subgenre'] = 'all'
+    genreList, compareCount = self.WavveObj.GetGenreList(
+        uicode, parameters, pageNum, addinfoyn=isAddInfo)
+    for genre in genreList:
+      title = genre.get('title')
+      thumbnail = genre.get('thumbnail')
+      info = genre.get('info')
+      if uicode == 'moviegenre_svod' and isAddInfo == True:
+        title = '%s (%s)' % (title, str(info.get('year')))
       else:
-        i1iI['plot'] = IiI11iII1
-      if OooooO0oOOOO == 'vodgenre':
-        oooooo0OO = {'mode': 'DEEP_LIST', 'contentid': oO.get('uicode'), 'contentidType': 'contentid', 'uicode': 'vod', 'page': '1', 'title': IiI11iII1, 'subtitle': '', 'thumbnail': i11i1, 'viewage': oO.get('viewage')
-                     }
-        iiIii = True
+        info['plot'] = title
+      if uicode == 'vodgenre':
+        params = {'mode': 'DEEP_LIST', 'contentid': genre.get('uicode'), 'contentidType': 'contentid', 'uicode': 'vod', 'page': '1', 'title': title, 'subtitle': '', 'thumbnail': thumbnail, 'viewage': genre.get('viewage')
+                  }
+        isFolder = True
       else:
-        oooooo0OO = {'mode': 'MOVIE', 'contentid': oO.get('uicode'), 'contentidType': 'contentid', 'uicode': 'movie', 'page': '1', 'title': IiI11iII1, 'subtitle': '', 'thumbnail': i11i1, 'viewage': oO.get('viewage')
-                     }
-        iiIii = False
-      if oooooo0OO.get('viewage') == '21':
-        IiI11iII1 += ' (%s)' % (oooooo0OO.get('viewage'))
-      self.add_dir(IiI11iII1, sublabel='', img=i11i1,
-                   infoLabels=i1iI, isFolder=iiIii, params=oooooo0OO)
-    if OO:
-      O0ii1ii1ii['mode'] = 'GENRE_LIST'
-      O0ii1ii1ii['uicode'] = OooooO0oOOOO
-      O0ii1ii1ii['page'] = str(oOoO + 1)
-      IiI11iII1 = '[B]%s >>[/B]' % '다음 페이지'
-      i1II1 = str(oOoO + 1)
-      self.add_dir(IiI11iII1, sublabel=i1II1, img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-    if len(II1iI1I11I) > 0:
+        params = {'mode': 'MOVIE', 'contentid': genre.get('uicode'), 'contentidType': 'contentid', 'uicode': 'movie', 'page': '1', 'title': title, 'subtitle': '', 'thumbnail': thumbnail, 'viewage': genre.get('viewage')
+                  }
+        isFolder = False
+      if params.get('viewage') == '21':
+        title += ' (%s)' % (params.get('viewage'))
+      self.add_dir(title, sublabel='', img=thumbnail,
+                   infoLabels=info, isFolder=isFolder, params=params)
+    if compareCount:
+      parameters['mode'] = 'GENRE_LIST'
+      parameters['uicode'] = uicode
+      parameters['page'] = str(pageNum + 1)
+      label = '[B]%s >>[/B]' % '다음 페이지'
+      sublabel = str(pageNum + 1)
+      self.add_dir(label, sublabel=sublabel, img='',
+                   infoLabels=None, isFolder=True, params=parameters)
+    if len(genreList) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle, cacheToDisc=False)
 
   def dp_Deeplink_List(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    oo0 = self.get_settings_addinfo()
-    OooooO0oOOOO = args.get('uicode')
-    I1ii11 = args.get('came')
-    oOoO = int(args.get('page'))
-    Ii1i1iI, OO = self.WavveObj.GetDeeplinkList(
-        OooooO0oOOOO, I1ii11, oOoO, addinfoyn=oo0)
-    for ooo0o00 in Ii1i1iI:
-      IiI11iII1 = ooo0o00.get('title')
-      i1II1 = ooo0o00.get('subtitle')
-      i11i1 = ooo0o00.get('thumbnail')
-      ooO = ooo0o00.get('uicode')
-      o0o00 = ooo0o00.get('channelepg')
-      O0ii1ii1ii = {'uicode': ooO, 'came': I1ii11, 'contentid': ooo0o00.get('contentid'), 'contentidType': ooo0o00.get('contentidType'), 'page': '1', 'title': IiI11iII1, 'subtitle': i1II1, 'thumbnail': i11i1, 'viewage': ooo0o00.get('viewage')
+    isAddInfo = self.get_settings_addinfo()
+    uicode = args.get('uicode')
+    came = args.get('came')
+    pageNum = int(args.get('page'))
+    deepLinkList, compareCount = self.WavveObj.GetDeeplinkList(
+        uicode, came, pageNum, addinfoyn=isAddInfo)
+    for deepLink in deepLinkList:
+      title = deepLink.get('title')
+      subtitle = deepLink.get('subtitle')
+      thumbnail = deepLink.get('thumbnail')
+      uicode = deepLink.get('uicode')
+      channelEpg = deepLink.get('channelepg')
+      parameters = {'uicode': uicode, 'came': came, 'contentid': deepLink.get('contentid'), 'contentidType': deepLink.get('contentidType'), 'page': '1', 'title': title, 'subtitle': subtitle, 'thumbnail': thumbnail, 'viewage': deepLink.get('viewage')
                     }
-      if ooO == 'channel':
-        O0ii1ii1ii['mode'] = 'LIVE'
-      elif ooO == 'movie':
-        O0ii1ii1ii['mode'] = 'MOVIE'
+      if uicode == 'channel':
+        parameters['mode'] = 'LIVE'
+      elif uicode == 'movie':
+        parameters['mode'] = 'MOVIE'
       else:
-        O0ii1ii1ii['mode'] = 'DEEP_LIST'
-      i1iI = ooo0o00.get('info')
-      if o0o00:
-        i1iI['plot'] = '%s\n\n%s' % (IiI11iII1, o0o00)
-      elif ooO == 'movie' and oo0 == True:
-        IiI11iII1 = '%s (%s)' % (IiI11iII1, str(i1iI.get('year')))
+        parameters['mode'] = 'DEEP_LIST'
+      info = deepLink.get('info')
+      if channelEpg:
+        info['plot'] = '%s\n\n%s' % (title, channelEpg)
+      elif uicode == 'movie' and oo0 == True:
+        title = '%s (%s)' % (title, str(info.get('year')))
       else:
-        i1iI['plot'] = '%s\n\n%s' % (IiI11iII1, i1II1)
-      if ooo0o00.get('viewage') == '21':
-        i1II1 += ' (%s)' % (ooo0o00.get('viewage'))
-      if ooO in ['channel', 'movie']:
-        iiIii = False
-      elif O0ii1ii1ii['contentidType'] == 'direct':
-        iiIii = False
-        O0ii1ii1ii['mode'] = 'VOD'
+        info['plot'] = '%s\n\n%s' % (title, subtitle)
+      if deepLink.get('viewage') == '21':
+        subtitle += ' (%s)' % (deepLink.get('viewage'))
+      if uicode in ['channel', 'movie']:
+        isFolder = False
+      elif parameters['contentidType'] == 'direct':
+        isFolder = False
+        parameters['mode'] = 'VOD'
       else:
-        iiIii = True
-      self.add_dir(IiI11iII1, sublabel=i1II1, img=i11i1,
-                   infoLabels=i1iI, isFolder=iiIii, params=O0ii1ii1ii)
-    if OO:
-      O0ii1ii1ii['mode'] = 'GN_LIST'
-      O0ii1ii1ii['uicode'] = OooooO0oOOOO
-      O0ii1ii1ii['page'] = str(oOoO + 1)
-      IiI11iII1 = '[B]%s >>[/B]' % '다음 페이지'
-      i1II1 = str(oOoO + 1)
-      self.add_dir(IiI11iII1, sublabel=i1II1, img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-    if len(Ii1i1iI) > 0:
+        isFolder = True
+      self.add_dir(title, sublabel=subtitle, img=thumbnail,
+                   infoLabels=info, isFolder=isFolder, params=parameters)
+    if compareCount:
+      parameters['mode'] = 'GN_LIST'
+      parameters['uicode'] = uicode
+      parameters['page'] = str(pageNum + 1)
+      label = '[B]%s >>[/B]' % '다음 페이지'
+      sublabel = str(pageNum + 1)
+      self.add_dir(label, sublabel=sublabel, img='',
+                   infoLabels=None, isFolder=True, params=parameters)
+    if len(deepLinkList) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle, cacheToDisc=False)
 
   def dp_Episodelink_List(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    OoO0ooO = args.get('contentid')
-    O000 = args.get('contentidType')
-    IiI1iIiIIIii = args.get('uicode')
-    oOoO = int(args.get('page'))
-    OoOo, OO = self.WavveObj.GetEpisodeList(
-        OoO0ooO, IiI1iIiIIIii, O000, oOoO, orderby=self.get_winEpisodeOrderby())
-    for O00 in OoOo:
-      IiI11iII1 = O00.get('title')
-      i1II1 = O00.get('subtitle')
-      i11i1 = O00.get('thumbnail')
-      O0ii1ii1ii = {'mode': 'VOD', 'uicode': O00.get('uicode'), 'contentid': O00.get('contentid'), 'programid': O00.get('programid'), 'title': IiI11iII1, 'subtitle': i1II1, 'thumbnail': i11i1, 'viewage': O00.get('viewage')
-                    }
-      if O00.get('viewage') == '21':
-        i1II1 += ' (%s)' % (O00.get('viewage'))
-      Oooo0 = O00.get('info')
-      Oooo0['plot'] = O00.get('synopsis')
-      self.add_dir(IiI11iII1, sublabel=i1II1, img=i11i1,
-                   infoLabels=Oooo0, isFolder=False, params=O0ii1ii1ii)
-    if oOoO == 1:
-      i1iI = {'plot': '정렬순서를 변경합니다.'}
-      O0ii1ii1ii = {}
-      O0ii1ii1ii['mode'] = 'ORDER_BY'
+    contentId = args.get('contentid')
+    contentIdType = args.get('contentidType')
+    uicode = args.get('uicode')
+    pageNum = int(args.get('page'))
+    episodeList, compareCount = self.WavveObj.GetEpisodeList(
+        contentId, uicode, contentIdType, pageNum, orderby=self.get_winEpisodeOrderby())
+    for episode in episodeList:
+      title = episode.get('title')
+      subtitle = episode.get('subtitle')
+      thumbnail = episode.get('thumbnail')
+      parameters = {'mode': 'VOD', 'uicode': episode.get('uicode'), 'contentid': episode.get('contentid'), 'programid': episode.get(
+          'programid'), 'title': title, 'subtitle': subtitle, 'thumbnail': thumbnail, 'viewage': episode.get('viewage')}
+      if episode.get('viewage') == '21':
+        subtitle += ' (%s)' % (episode.get('viewage'))
+      info = episode.get('info')
+      info['plot'] = episode.get('synopsis')
+      self.add_dir(title, sublabel=subtitle, img=thumbnail,
+                   infoLabels=info, isFolder=False, params=parameters)
+    if pageNum == 1:
+      info = {'plot': '정렬순서를 변경합니다.'}
+      parameters = {}
+      parameters['mode'] = 'ORDER_BY'
       if self.get_winEpisodeOrderby() == 'desc':
-        IiI11iII1 = '정렬순서변경 : 최신화부터 -> 1회부터'
-        O0ii1ii1ii['orderby'] = 'asc'
+        label = '정렬순서변경 : 최신화부터 -> 1회부터'
+        parameters['orderby'] = 'asc'
       else:
-        IiI11iII1 = '정렬순서변경 : 1회부터 -> 최신화부터'
-        O0ii1ii1ii['orderby'] = 'desc'
-      self.add_dir(IiI11iII1, sublabel='', img='', infoLabels=i1iI,
-                   isFolder=False, params=O0ii1ii1ii)
-    if OO:
-      O0ii1ii1ii['mode'] = 'DEEP_LIST'
-      O0ii1ii1ii['uicode'] = IiI1iIiIIIii
-      O0ii1ii1ii['contentid'] = OoO0ooO
-      O0ii1ii1ii['contentidType'] = O000
-      O0ii1ii1ii['page'] = str(oOoO + 1)
-      IiI11iII1 = '[B]%s >>[/B]' % '다음 페이지'
-      i1II1 = str(oOoO + 1)
-      self.add_dir(IiI11iII1, sublabel=i1II1, img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-    if len(OoOo) > 0:
+        label = '정렬순서변경 : 1회부터 -> 최신화부터'
+        parameters['orderby'] = 'desc'
+      self.add_dir(label, sublabel='', img='', infoLabels=info,
+                   isFolder=False, params=parameters)
+    if compareCount:
+      parameters['mode'] = 'DEEP_LIST'
+      parameters['uicode'] = uicode
+      parameters['contentid'] = contentId
+      parameters['contentidType'] = contentIdType
+      parameters['page'] = str(pageNum + 1)
+      label = '[B]%s >>[/B]' % '다음 페이지'
+      sublabel = str(pageNum + 1)
+      self.add_dir(label, sublabel=sublabel, img='',
+                   infoLabels=None, isFolder=True, params=parameters)
+    if len(episodeList) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle, cacheToDisc=False)
 
   def play_VIDEO(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    OoO0ooO = args.get('contentid')
-    IiI1iIiIIIii = args.get('uicode')
-    Oooo00 = self.get_selQuality()
-    self.addon_log(OoO0ooO + ' - ' + IiI1iIiIIIii, False)
-    II11iI111i1, Oo00OoOo, ii1ii111, i11111I1I = self.WavveObj.GetStreamingURL(
-        OoO0ooO, IiI1iIiIIIii, Oooo00)
-    I1I11iI11iI1i = '%s|Cookie=%s' % (II11iI111i1, Oo00OoOo)
-    self.addon_log(I1I11iI11iI1i, False)
-    if II11iI111i1 == '':
+    contentId = args.get('contentid')
+    uicode = args.get('uicode')
+    quality = self.get_selQuality()
+    self.addon_log(contentId + ' - ' + uicode, False)
+    playurl, awscookie, drm, previewmsg = self.WavveObj.GetStreamingURL(
+        contentId, uicode, quality)
+    path = '%s|Cookie=%s' % (playurl, awscookie)
+    self.addon_log(path, False)
+    if playurl == '':
       self.addon_noti(__language__(30303).encode('utf8'))
       return
-    I1IIIiI1I1ii1 = xbmcgui.ListItem(path=I1I11iI11iI1i)
-    if ii1ii111:
-      i11iiiiI1i = ii1ii111['customdata']
-      iIIii = ii1ii111['drmhost']
-      iiIi1IIiI = 'mpd'
-      i1 = 'com.widevine.alpha'
-      OO00OO0O0 = inputstreamhelper.Helper(iiIi1IIiI, drm=i1)
-      if OO00OO0O0.check_inputstream():
-        if IiI1iIiIIIii == 'movie':
-          OoO0O0O0o00 = 'https://www.wavve.com/player/movie?movieid=%s' % OoO0ooO
+    listItem = xbmcgui.ListItem(path=path)
+    if drm:
+      customdata = drm['customdata']
+      drmhost = drm['drmhost']
+      menifestType = 'mpd'
+      helper = inputstreamhelper.Helper(menifestType, drm='com.widevine.alpha')
+      if helper.check_inputstream():
+        if uicode == 'movie':
+          referer = 'https://www.wavve.com/player/movie?movieid=%s' % contentId
         else:
-          OoO0O0O0o00 = 'https://www.wavve.com/player/vod?programid=%s&page=1' % OoO0ooO
-        OOOoO000 = {'content-type': 'application/octet-stream', 'origin': 'https://www.wavve.com', 'pallycon-customdata': i11iiiiI1i, 'referer': OoO0O0O0o00, 'sec-fetch-dest': 'empty', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'user-agent': OOoO
-                    }
-        oOOOOIi = iIIii + '|' + urllib.urlencode(OOOoO000) + '|R{SSM}|'
-        I1IIIiI1I1ii1.setProperty(
-            'inputstreamaddon', OO00OO0O0.inputstream_addon)
-        I1IIIiI1I1ii1.setProperty(
-            'inputstream.adaptive.manifest_type', iiIi1IIiI)
-        I1IIIiI1I1ii1.setProperty('inputstream.adaptive.license_type', i1)
-        I1IIIiI1I1ii1.setProperty('inputstream.adaptive.license_key', oOOOOIi)
-        I1IIIiI1I1ii1.setProperty(
-            'inputstream.adaptive.stream_headers', 'Cookie=%s' % Oo00OoOo)
-    xbmcplugin.setResolvedUrl(self._addon_handle, True, I1IIIiI1I1ii1)
-    if i11111I1I:
-      self.addon_noti(i11111I1I.encode('utf-8'))
+          referer = 'https://www.wavve.com/player/vod?programid=%s&page=1' % contentId
+        uri = {'content-type': 'application/octet-stream', 'origin': 'https://www.wavve.com', 'pallycon-customdata': customdata, 'referer': referer, 'sec-fetch-dest': 'empty', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'user-agent': userAgent
+               }
+        licenseKey = drmhost + '|' + urllib.urlencode(uri) + '|R{SSM}|'
+        listItem.setProperty(
+            'inputstreamaddon', helper.inputstream_addon)
+        listItem.setProperty(
+            'inputstream.adaptive.manifest_type', menifestType)
+        listItem.setProperty('inputstream.adaptive.license_type', i1)
+        listItem.setProperty('inputstream.adaptive.license_key', licenseKey)
+        listItem.setProperty(
+            'inputstream.adaptive.stream_headers', 'Cookie=%s' % awscookie)
+    xbmcplugin.setResolvedUrl(self._addon_handle, True, listItem)
+    if previewmsg:
+      self.addon_noti(previewmsg.encode('utf-8'))
     else:
-      if '/preview.' in urlparse.urlsplit(II11iI111i1).path:
+      if '/preview.' in urlparse.urlsplit(playurl).path:
         self.addon_noti(__language__(30401).encode('utf8'))
     try:
       if args.get('mode') in ['VOD', 'MOVIE'] and args.get('title') and args.get('viewage') != '21':
-        O0ii1ii1ii = {'code': args.get('programid') if args.get('mode') == 'VOD' else args.get('contentid'), 'img': args.get('thumbnail'), 'title': args.get('title'), 'subtitle': args.get('subtitle'), 'videoid': args.get('contentid')
+        parameters = {'code': args.get('programid') if args.get('mode') == 'VOD' else args.get('contentid'), 'img': args.get('thumbnail'), 'title': args.get('title'), 'subtitle': args.get('subtitle'), 'videoid': args.get('contentid')
                       }
-        self.Save_Watched_List(args.get('mode').lower(), O0ii1ii1ii)
+        self.Save_Watched_List(args.get('mode').lower(), parameters)
     except:
       None
 
   def dp_Watch_List(self, args):
-    o0O00oOOoo = args.get('genre')
-    o00oOO0 = self.get_settings_direct_replay()
-    if o0O00oOOoo == '-':
-      IiI11iII1 = 'VOD 시청내역'
-      O0ii1ii1ii = {'mode': 'WATCH', 'genre': 'vod'
-                    }
-      self.add_dir(IiI11iII1, sublabel='', img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-      IiI11iII1 = '영화 시청내역'
-      O0ii1ii1ii['genre'] = 'movie'
-      self.add_dir(IiI11iII1, sublabel='', img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
+    genre = args.get('genre')
+    directReplay = self.get_settings_direct_replay()
+    if genre == '-':
+      self.add_dir('VOD 시청내역', sublabel='', img='',
+                   infoLabels=None, isFolder=True, params={'mode': 'WATCH', 'genre': 'vod'})
+      self.add_dir('영화 시청내역', sublabel='', img='',
+                   infoLabels=None, isFolder=True, params={'mode': 'WATCH', 'genre': 'movie'})
       xbmcplugin.endOfDirectory(self._addon_handle)
     else:
-      iI11I = self.Load_Watched_List(o0O00oOOoo)
-      for I1i11ii11 in iI11I:
-        OO00O0oOO = dict(urlparse.parse_qsl(I1i11ii11))
-        IiI11iII1 = OO00O0oOO.get('title').strip()
-        i1II1 = OO00O0oOO.get('subtitle').strip()
-        if i1II1 == 'None':
-          i1II1 = ''
-        i11i1 = OO00O0oOO.get('img')
-        Ooooo00o0OoO = OO00O0oOO.get('videoid')
-        i1iI = {}
-        if o0O00oOOoo == 'movie' and self.get_settings_addinfo() == True:
-          oOO0 = self.WavveObj.GetMovieInfoList([OO00O0oOO.get('code')])
-          i1iI = oOO0.get(OO00O0oOO.get('code'))
+      watchedList = self.Load_Watched_List(genre)
+      for watched in watchedList:
+        watchedDict = dict(urlparse.parse_qsl(watched))
+        title = watchedDict.get('title').strip()
+        subtitle = watchedDict.get('subtitle').strip()
+        if subtitle == 'None':
+          subtitle = ''
+        img = watchedDict.get('img')
+        videoId = watchedDict.get('videoid')
+        info = {}
+        if genre == 'movie' and self.get_settings_addinfo() == True:
+          movieInfoList = self.WavveObj.GetMovieInfoList(
+              [watchedDict.get('code')])
+          info = movieInfoList.get(watchedDict.get('code'))
         else:
-          i1iI['plot'] = '%s\n%s' % (IiI11iII1, i1II1)
-        if o0O00oOOoo == 'vod':
-          if o00oOO0 == False or Ooooo00o0OoO == None:
-            O0ii1ii1ii = {'mode': 'DEEP_LIST', 'contentid': OO00O0oOO.get('code'), 'contentidType': 'programid', 'uicode': 'vod', 'page': '1'
+          info['plot'] = '%s\n%s' % (title, subtitle)
+        if genre == 'vod':
+          if directReplay == False or videoId == None:
+            parameters = {'mode': 'DEEP_LIST', 'contentid': watchedDict.get('code'), 'contentidType': 'programid', 'uicode': 'vod', 'page': '1'
                           }
-            iiIii = True
+            isFolder = True
           else:
-            O0ii1ii1ii = {'mode': 'VOD', 'contentid': Ooooo00o0OoO, 'contentidType': 'contentid', 'programid': OO00O0oOO.get('code'), 'uicode': 'vod', 'title': IiI11iII1, 'subtitle': i1II1, 'thumbnail': i11i1
+            parameters = {'mode': 'VOD', 'contentid': videoId, 'contentidType': 'contentid', 'programid': watchedDict.get('code'), 'uicode': 'vod', 'title': title, 'subtitle': subtitle, 'thumbnail': img
                           }
-            iiIii = False
+            isFolder = False
         else:
-          O0ii1ii1ii = {'mode': 'MOVIE', 'contentid': OO00O0oOO.get('code'), 'contentidType': 'contentid', 'uicode': 'movie', 'title': IiI11iII1, 'thumbnail': i11i1
+          parameters = {'mode': 'MOVIE', 'contentid': watchedDict.get('code'), 'contentidType': 'contentid', 'uicode': 'movie', 'title': title, 'thumbnail': img
                         }
-          iiIii = False
-        self.add_dir(IiI11iII1, sublabel=i1II1, img=i11i1,
-                     infoLabels=i1iI, isFolder=iiIii, params=O0ii1ii1ii)
-      i1iI = {'plot': '시청목록을 삭제합니다.'}
-      IiI11iII1 = '*** 시청목록 삭제 ***'
-      O0ii1ii1ii = {'mode': 'MYVIEW_REMOVE', 'genre': o0O00oOOoo
+          isFolder = False
+        self.add_dir(title, sublabel=subtitle, img=img,
+                     infoLabels=info, isFolder=isFolder, params=parameters)
+      info = {'plot': '시청목록을 삭제합니다.'}
+      label = '*** 시청목록 삭제 ***'
+      parameters = {'mode': 'MYVIEW_REMOVE', 'genre': genre
                     }
-      self.add_dir(IiI11iII1, sublabel='', img='', infoLabels=i1iI,
-                   isFolder=False, params=O0ii1ii1ii)
+      self.add_dir(label, sublabel='', img='', infoLabels=info,
+                   isFolder=False, params=parameters)
       xbmcplugin.endOfDirectory(self._addon_handle, cacheToDisc=False)
 
   def dp_Search_Group(self, args):
-    IiI11iII1 = 'VOD 검색'
-    O0ii1ii1ii = {'mode': 'SEARCH_LIST', 'genre': 'vod', 'page': '1'
-                  }
-    self.add_dir(IiI11iII1, sublabel='', img='', infoLabels=None,
-                 isFolder=True, params=O0ii1ii1ii)
-    IiI11iII1 = '영화 검색'
-    O0ii1ii1ii['genre'] = 'movie'
-    self.add_dir(IiI11iII1, sublabel='', img='', infoLabels=None,
-                 isFolder=True, params=O0ii1ii1ii)
+    self.add_dir('VOD 검색', sublabel='', img='', infoLabels=None,
+                 isFolder=True, params={'mode': 'SEARCH_LIST', 'genre': 'vod', 'page': '1'})
+    self.add_dir('영화 검색', sublabel='', img='', infoLabels=None,
+                 isFolder=True, params={'mode': 'SEARCH_LIST', 'genre': 'movie', 'page': '1'})
     xbmcplugin.endOfDirectory(self._addon_handle)
 
   def dp_Search_List(self, args):
     self.WavveObj.SaveCredential(self.get_winCredential())
-    oo0 = self.get_settings_addinfo()
-    IiI1iIiIIIii = args.get('genre')
-    oOoO = int(args.get('page'))
+    isAddInfo = self.get_settings_addinfo()
+    genre = args.get('genre')
+    pageNum = int(args.get('page'))
     if 'search_key' in args:
-      iiI11I1i1i1iI = args.get('search_key')
+      searchKey = args.get('search_key')
     else:
-      iiI11I1i1i1iI = self.get_keyboard_input(
+      searchKey = self.get_keyboard_input(
           __language__(30003).encode('utf-8'))
-      if not iiI11I1i1i1iI:
+      if not searchKey:
         return
-    oooo00, OO = self.WavveObj.GetSearchList(
-        iiI11I1i1i1iI, IiI1iIiIIIii, oOoO, exclusion21=self.get_settings_exclusion21(), addinfoyn=oo0)
-    for o0O0O0 in oooo00:
-      IiI11iII1 = o0O0O0.get('title')
-      i11i1 = o0O0O0.get('thumbnail')
-      i1iI = o0O0O0.get('info')
-      if IiI1iIiIIIii == 'movie' and oo0 == True:
-        IiI11iII1 = '%s (%s)' % (IiI11iII1, str(i1iI.get('year')))
+    searchList, compareCount = self.WavveObj.GetSearchList(
+        searchKey, genre, pageNum, exclusion21=self.get_settings_exclusion21(), addinfoyn=isAddInfo)
+    for search in searchList:
+      title = search.get('title')
+      thumbnail = search.get('thumbnail')
+      info = search.get('info')
+      if genre == 'movie' and isAddInfo == True:
+        title = '%s (%s)' % (title, str(info.get('year')))
       else:
-        i1iI['plot'] = IiI11iII1
-      if IiI1iIiIIIii == 'vod':
-        O0ii1ii1ii = {'mode': 'DEEP_LIST', 'contentid': o0O0O0.get('programid'), 'contentidType': 'programid', 'uicode': 'vod', 'page': '1', 'title': IiI11iII1, 'subtitle': '', 'thumbnail': i11i1, 'viewage': o0O0O0.get('viewage')
+        info['plot'] = title
+      if genre == 'vod':
+        parameters = {'mode': 'DEEP_LIST', 'contentid': search.get('programid'), 'contentidType': 'programid', 'uicode': 'vod', 'page': '1', 'title': title, 'subtitle': '', 'thumbnail': thumbnail, 'viewage': search.get('viewage')
                       }
-        iiIii = True
+        isFolder = True
       else:
-        O0ii1ii1ii = {'mode': 'MOVIE', 'contentid': o0O0O0.get('contentid'), 'contentidType': 'contentid', 'uicode': 'movie', 'page': '1', 'title': IiI11iII1, 'subtitle': '', 'thumbnail': i11i1, 'viewage': o0O0O0.get('viewage')
+        parameters = {'mode': 'MOVIE', 'contentid': search.get('contentid'), 'contentidType': 'contentid', 'uicode': 'movie', 'page': '1', 'title': title, 'subtitle': '', 'thumbnail': thumbnail, 'viewage': search.get('viewage')
                       }
-        iiIii = False
-      if O0ii1ii1ii.get('viewage') == '21':
-        IiI11iII1 += ' (%s)' % (O0ii1ii1ii.get('viewage'))
-      self.add_dir(IiI11iII1, sublabel='', img=i11i1,
-                   infoLabels=i1iI, isFolder=iiIii, params=O0ii1ii1ii)
-    if OO:
-      O0ii1ii1ii['mode'] = 'SEARCH_LIST'
-      O0ii1ii1ii['genre'] = IiI1iIiIIIii
-      O0ii1ii1ii['page'] = str(oOoO + 1)
-      O0ii1ii1ii['search_key'] = iiI11I1i1i1iI
-      IiI11iII1 = '[B]%s >>[/B]' % '다음 페이지'
-      i1II1 = str(oOoO + 1)
-      self.add_dir(IiI11iII1, sublabel=i1II1, img='',
-                   infoLabels=None, isFolder=True, params=O0ii1ii1ii)
-    if len(oooo00) > 0:
+        isFolder = False
+      if parameters.get('viewage') == '21':
+        title += ' (%s)' % (parameters.get('viewage'))
+      self.add_dir(title, sublabel='', img=thumbnail,
+                   infoLabels=info, isFolder=isFolder, params=parameters)
+    if compareCount:
+      parameters['mode'] = 'SEARCH_LIST'
+      parameters['genre'] = genre
+      parameters['page'] = str(pageNum + 1)
+      parameters['search_key'] = searchKey
+      label = '[B]%s >>[/B]' % '다음 페이지'
+      sublabel = str(pageNum + 1)
+      self.add_dir(label, sublabel=sublabel, img='',
+                   infoLabels=None, isFolder=True, params=parameters)
+    if len(searchList) > 0:
       xbmcplugin.endOfDirectory(self._addon_handle)
 
   def Load_Watched_List(self, genre):
     try:
-      O0000 = xbmc.translatePath(os.path.join(
+      watchedListFilePath = xbmc.translatePath(os.path.join(
           __profile__, 'watchedlist_%s.txt' % genre))
-      with open(O0000, 'r') as ooO00O0O0:
-        iII1I1 = ooO00O0O0.readlines()
+      with open(watchedListFilePath, 'r') as f:
+        watchedList = f.readlines()
     except:
-      iII1I1 = []
-    return iII1I1
+      watchedList = []
+    return watchedList
 
   def Save_Watched_List(self, genre, in_params):
     try:
-      O0000 = xbmc.translatePath(os.path.join(
+      watchedListFilePath = xbmc.translatePath(os.path.join(
           __profile__, 'watchedlist_%s.txt' % genre))
-      O00oo0ooO = self.Load_Watched_List(genre)
-      with open(O0000, 'w') as ooO00O0O0:
+      watchedList = self.Load_Watched_List(genre)
+      with open(watchedListFilePath, 'w') as f:
         ooo = urllib.urlencode(in_params)
         ooo = ooo.encode('utf-8') + '\n'
-        ooO00O0O0.write(ooo)
-        iIIiiiiI = 0
-        for I111i1I1 in O00oo0ooO:
-          O0o00OOo00O0O = dict(urlparse.parse_qsl(I111i1I1))
-          i111I11i = in_params.get('code')
-          ii1OoOO = O0o00OOo00O0O.get('code')
+        f.write(ooo)
+        i = 0
+        for watched in watchedList:
+          watchedDict = dict(urlparse.parse_qsl(watched))
+          paramsCode = in_params.get('code')
+          watchedDictCode = watchedDict.get('code')
           if genre == 'vod' and self.get_settings_direct_replay() == True:
-            i111I11i = in_params.get('videoid')
-            ii1OoOO = O0o00OOo00O0O.get('videoid') if ii1OoOO != None else '-'
-          if i111I11i != ii1OoOO:
-            ooO00O0O0.write(I111i1I1)
-            iIIiiiiI += 1
-            if iIIiiiiI >= 50:
+            paramsCode = in_params.get('videoid')
+            watchedDictCode = watchedDict.get(
+                'videoid') if watchedDictCode != None else '-'
+          if paramsCode != watchedDictCode:
+            f.write(watched)
+            i += 1
+            if i >= 50:
               break
     except:
       None
 
   def Delete_Watched_List(self, genre):
     try:
-      O0000 = xbmc.translatePath(os.path.join(
+      watchedListFilePath = xbmc.translatePath(os.path.join(
           __profile__, 'watchedlist_%s.txt' % genre))
-      with open(O0000, 'w') as ooO00O0O0:
-        ooO00O0O0.write('')
+      with open(watchedListFilePath, 'w') as f:
+        f.write('')
     except:
       None
 
   def dp_WatchList_Delete(self, args):
-    o0O00oOOoo = args.get('genre')
-    oOOOO = xbmcgui.Dialog()
-    i1i = oOOOO.yesno(__name__, __language__(30201).encode(
+    genre = args.get('genre')
+    dialog = xbmcgui.Dialog()
+    isYes = dialog.yesno(__name__, __language__(30201).encode(
         'utf8'), __language__(30202).encode('utf8'))
-    if i1i == False:
+    if isYes == False:
       sys.exit()
-    self.Delete_Watched_List(o0O00oOOoo)
+    self.Delete_Watched_List(genre)
     xbmc.executebuiltin("Container.Refresh")
 
   def wavve_main(self):
-    I1 = self.main_params.get('mode', None)
+    mode = self.main_params.get('mode', None)
     self.login_main()
-    if I1 is None:
+    if mode is None:
       self.dp_Main_List()
-    elif I1 == 'GNB_LIST':
+    elif mode == 'GNB_LIST':
       self.dp_Gnb_List(self.main_params)
-    elif I1 == 'GN_LIST':
+    elif mode == 'GN_LIST':
       self.dp_Deeplink_List(self.main_params)
-    elif I1 == 'DEEP_LIST':
-      IiI1iIiIIIii = self.main_params.get('uicode', None)
-      if IiI1iIiIIIii in ['quick', 'vod', 'program', 'x']:
+    elif mode == 'DEEP_LIST':
+      uicode = self.main_params.get('uicode', None)
+      if uicode in ['quick', 'vod', 'program', 'x']:
         self.dp_Episodelink_List(self.main_params)
       else:
         None
-    elif I1 in ['LIVE', 'VOD', 'MOVIE']:
+    elif mode in ['LIVE', 'VOD', 'MOVIE']:
       self.play_VIDEO(self.main_params)
       time.sleep(0.1)
-    elif I1 == 'GN_MYVIEW':
+    elif mode == 'GN_MYVIEW':
       self.dp_Myview_Group(self.main_params)
-    elif I1 == 'MYVIEW_LIST':
+    elif mode == 'MYVIEW_LIST':
       self.dp_Myview_List(self.main_params)
-    elif I1 == 'GENRE':
+    elif mode == 'GENRE':
       self.dp_Genre_Group(self.main_params)
-    elif I1 == 'GENRE_LIST':
+    elif mode == 'GENRE_LIST':
       self.dp_Genre_List(self.main_params)
-    elif I1 == 'WATCH':
+    elif mode == 'WATCH':
       self.dp_Watch_List(self.main_params)
-    elif I1 == 'MYVIEW_REMOVE':
+    elif mode == 'MYVIEW_REMOVE':
       self.dp_WatchList_Delete(self.main_params)
-    elif I1 == 'SEARCH':
+    elif mode == 'SEARCH':
       self.dp_Search_Group(self.main_params)
-    elif I1 == 'SEARCH_LIST':
+    elif mode == 'SEARCH_LIST':
       self.dp_Search_List(self.main_params)
-    elif I1 == 'ORDER_BY':
+    elif mode == 'ORDER_BY':
       self.dp_setEpOrderby(self.main_params)
     else:
       None
